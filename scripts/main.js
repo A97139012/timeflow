@@ -98,6 +98,38 @@ class TimeFlowApp {
                 this.exportCalendar();
             });
         }
+
+        // 绑定导入按钮事件
+        const importPlansBtn = document.getElementById('import-plans');
+        const importPlansInput = document.getElementById('import-plans-input');
+        
+        if (importPlansBtn && importPlansInput) {
+            importPlansBtn.addEventListener('touchstart', this.handleTouchStart, { passive: true });
+            importPlansBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                importPlansInput.click();
+            });
+            
+            importPlansInput.addEventListener('change', (e) => {
+                this.importPlans(e);
+            });
+        }
+
+        // 绑定日历导入按钮事件
+        const importCalendarBtn = document.getElementById('import-calendar');
+        const importCalendarInput = document.getElementById('import-calendar-input');
+        
+        if (importCalendarBtn && importCalendarInput) {
+            importCalendarBtn.addEventListener('touchstart', this.handleTouchStart, { passive: true });
+            importCalendarBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                importCalendarInput.click();
+            });
+            
+            importCalendarInput.addEventListener('change', (e) => {
+                this.importCalendar(e);
+            });
+        }
     }
 
     // 处理触摸开始事件，提高移动端响应性
@@ -163,6 +195,32 @@ class TimeFlowApp {
         }
     }
 
+    importPlans(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const plansData = JSON.parse(e.target.result);
+                
+                // 询问用户是要合并还是替换
+                const choice = confirm('是否要合并导入的计划与当前计划？\n点击"确定"合并计划，点击"取消"替换当前计划。');
+                
+                if (window.plansApp) {
+                    window.plansApp.importPlans(plansData, choice);
+                    alert('计划' + (choice ? '合并' : '替换') + '成功！');
+                } else {
+                    alert('计划模块尚未初始化');
+                }
+            } catch (err) {
+                console.error('导入计划时出错:', err);
+                alert('导入计划失败: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    }
+
     exportCalendar() {
         if (window.calendarApp) {
             const calendarData = JSON.stringify(window.calendarApp.getAllEvents(), null, 2);
@@ -170,6 +228,32 @@ class TimeFlowApp {
         } else {
             alert('日历模块尚未初始化');
         }
+    }
+
+    importCalendar(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const calendarData = JSON.parse(e.target.result);
+                
+                // 询问用户是要合并还是替换
+                const choice = confirm('是否要合并导入的日程与当前日程？\n点击"确定"合并日程，点击"取消"替换当前日程。');
+                
+                if (window.calendarApp) {
+                    window.calendarApp.importEvents(calendarData, choice);
+                    alert('日程' + (choice ? '合并' : '替换') + '成功！');
+                } else {
+                    alert('日历模块尚未初始化');
+                }
+            } catch (err) {
+                console.error('导入日程时出错:', err);
+                alert('导入日程失败: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
     }
 
     downloadFile(filename, content, contentType) {

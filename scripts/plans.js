@@ -177,6 +177,57 @@ class PlansApp {
     getPlansByType(type) {
         return this.plans[type] || [];
     }
+
+    importPlans(plansData, merge = false) {
+        // 验证导入的数据格式
+        if (!plansData || typeof plansData !== 'object') {
+            throw new Error('无效的计划数据格式');
+        }
+
+        // 检查必要的计划类型是否存在
+        const requiredTypes = ['long-term', 'mid-term', 'short-term'];
+        for (const type of requiredTypes) {
+            if (!plansData.hasOwnProperty(type)) {
+                plansData[type] = [];
+            }
+        }
+
+        if (merge) {
+            // 合并模式：将导入的计划添加到现有计划中
+            requiredTypes.forEach(type => {
+                if (this.plans[type]) {
+                    // 合并两个数组，去重（基于ID）
+                    const mergedPlans = [...this.plans[type]];
+                    plansData[type].forEach(importedPlan => {
+                        // 检查是否已存在相同ID的计划
+                        const existingIndex = mergedPlans.findIndex(plan => plan.id === importedPlan.id);
+                        if (existingIndex >= 0) {
+                            // 如果存在，替换它
+                            mergedPlans[existingIndex] = importedPlan;
+                        } else {
+                            // 如果不存在，添加它
+                            mergedPlans.push(importedPlan);
+                        }
+                    });
+                    this.plans[type] = mergedPlans;
+                } else {
+                    this.plans[type] = [...plansData[type]];
+                }
+            });
+        } else {
+            // 替换模式：直接使用导入的计划数据
+            this.plans = plansData;
+        }
+        
+        // 保存并重新渲染
+        this.savePlans();
+        this.renderPlans();
+        
+        // 通知日历模块更新计划选择列表
+        if (window.calendarApp) {
+            window.calendarApp.populatePlanSelect();
+        }
+    }
 }
 
 // 当DOM加载完成后初始化计划模块

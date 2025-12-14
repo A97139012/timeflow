@@ -389,6 +389,38 @@ class CalendarApp {
     getAllEvents() {
         return this.events;
     }
+
+    importEvents(eventsData, merge = false) {
+        // 验证导入的数据格式
+        if (!Array.isArray(eventsData)) {
+            throw new Error('无效的日程数据格式');
+        }
+
+        if (merge) {
+            // 合并模式：将导入的日程添加到现有日程中
+            // 合并两个数组，去重（基于ID）
+            const mergedEvents = [...this.events];
+            eventsData.forEach(importedEvent => {
+                // 检查是否已存在相同ID的日程
+                const existingIndex = mergedEvents.findIndex(event => event.id === importedEvent.id);
+                if (existingIndex >= 0) {
+                    // 如果存在，替换它
+                    mergedEvents[existingIndex] = importedEvent;
+                } else {
+                    // 如果不存在，添加它
+                    mergedEvents.push(importedEvent);
+                }
+            });
+            this.events = mergedEvents;
+        } else {
+            // 替换模式：直接使用导入的日程数据
+            this.events = eventsData;
+        }
+        
+        // 保存并重新渲染日历
+        this.saveEvents();
+        this.renderCalendar();
+    }
 }
 
 // 当DOM加载完成后初始化日历模块
