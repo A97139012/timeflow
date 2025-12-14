@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时光流 - 个人计划管理系统</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/calendar.css">
+    <link rel="stylesheet" href="styles/plans.css">
+    <link rel="stylesheet" href="styles/diary.css">
+</head>
+<body>
+    <header>
+        <h1>时光流</h1>
+        <nav>
+            <ul>
+                <li><a href="#plans" class="active">计划管理</a></li>
+                <li><a href="#calendar">日历视图</a></li>
+                <li><a href="#diary">我的日记</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="plans" class="tab-content active">
+            <h2>计划管理</h2>
+            <div class="plan-types">
+                <div class="plan-type">
+                    <h3>长期计划 (五年计划)</h3>
+                    <button class="add-plan-btn" data-type="long-term">添加计划</button>
+                    <ul class="plan-list" id="long-term-plans"></ul>
+                </div>
+                
+                <div class="plan-type">
+                    <h3>中期计划 (年度计划)</h3>
+                    <button class="add-plan-btn" data-type="mid-term">添加计划</button>
+                    <ul class="plan-list" id="mid-term-plans"></ul>
+                </div>
+                
+                <div class="plan-type">
+                    <h3>短期计划</h3>
+                    <button class="add-plan-btn" data-type="short-term">添加计划</button>
+                    <ul class="plan-list" id="short-term-plans"></ul>
+                </div>
+            </div>
+            
+            <div class="export-section">
+                <h3>导出计划</h3>
+                <button id="export-plans">导出所有计划</button>
+            </div>
+        </section>
+
+        <section id="calendar" class="tab-content">
+            <h2>计划日历</h2>
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button id="prev-month">&lt;</button>
+                    <h3 id="current-month-year"></h3>
+                    <button id="next-month">&gt;</button>
+                </div>
+                <div class="calendar" id="calendar-view"></div>
+            </div>
+            
+            <div class="event-form-container">
+                <h3>添加日程</h3>
+                <form id="event-form">
+                    <input type="date" id="event-date" required>
+                    <input type="text" id="event-title" placeholder="日程标题" required>
+                    <textarea id="event-description" placeholder="描述"></textarea>
+                    <select id="event-plan">
+                        <option value="">关联计划（可选）</option>
+                    </select>
+                    <button type="submit">添加日程</button>
+                </form>
+            </div>
+            
+            <div class="export-section">
+                <h3>导出日历</h3>
+                <button id="export-calendar">导出日历</button>
+            </div>
+        </section>
+
+        <section id="diary" class="tab-content">
+            <!-- 日记部分的内容将由JavaScript动态生成 -->
+        </section>
+    </main>
+
+    <!-- 模态框用于添加/编辑计划 -->
+    <div id="plan-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>添加计划</h2>
+            <form id="plan-form">
+                <input type="hidden" id="plan-type-input">
+                <label for="plan-title">计划标题:</label>
+                <input type="text" id="plan-title" required>
+                
+                <label for="plan-description">描述:</label>
+                <textarea id="plan-description"></textarea>
+                
+                <label for="plan-start-date">开始日期:</label>
+                <input type="date" id="plan-start-date">
+                
+                <label for="plan-end-date">结束日期:</label>
+                <input type="date" id="plan-end-date">
+                
+                <button type="submit">保存计划</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="scripts/main.js"></script>
+    <script src="scripts/plans.js"></script>
+    <script src="scripts/calendar.js"></script>
+    <script src="scripts/diary.js"></script>
+</body>
+</html>

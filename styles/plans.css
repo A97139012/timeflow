@@ -1,0 +1,91 @@
+/* 计划管理样式 */
+
+.plan-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.plan-type {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.plan-type h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #4a5568;
+}
+
+.add-plan-btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 1rem;
+    -webkit-tap-highlight-color: transparent; /* 移除iOS默认高亮 */
+}
+
+.plan-list {
+    list-style: none;
+}
+
+.plan-item {
+    background-color: #f8f9fa;
+    border-left: 4px solid #667eea;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+    position: relative;
+}
+
+.plan-item.short-term {
+    border-left-color: #48bb78;
+}
+
+.plan-item.mid-term {
+    border-left-color: #ed8936;
+}
+
+.plan-item.long-term {
+    border-left-color: #667eea;
+}
+
+.plan-item h4 {
+    margin-bottom: 0.5rem;
+    color: #2d3748;
+}
+
+.plan-item .plan-dates {
+    font-size: 0.8rem;
+    color: #718096;
+    margin-bottom: 0.5rem;
+}
+
+.plan-item .plan-description {
+    margin-bottom: 1rem;
+    color: #4a5568;
+}
+
+.plan-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.plan-actions button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    -webkit-tap-highlight-color: transparent; /* 移除iOS默认高亮 */
+}
+
+.delete-plan {
+    background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+}
+
+/* 触摸反馈样式 */
+button.touch-active {
+    opacity: 0.7;
+    transform: scale(0.98);
+}

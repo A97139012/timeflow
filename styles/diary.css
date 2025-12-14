@@ -1,0 +1,128 @@
+/* 日记样式 */
+
+.diary-controls {
+    text-align: right;
+    margin-bottom: 1rem;
+}
+
+.lock-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+}
+
+.lock-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    text-align: center;
+    min-width: 300px;
+}
+
+.lock-content input {
+    display: block;
+    width: 100%;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.lock-content input[type="file"] {
+    display: inline-block;
+    width: auto;
+    margin: 0.5rem;
+}
+
+.import-section {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.import-section button {
+    display: block;
+    width: 100%;
+    margin: 0.5rem 0;
+    -webkit-tap-highlight-color: transparent; /* 移除iOS默认高亮 */
+}
+
+.diary-editor {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+}
+
+#diary-date {
+    display: block;
+    margin-bottom: 1rem;
+    width: fit-content;
+}
+
+#diary-content {
+    width: 100%;
+    min-height: 200px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.diary-list {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.diary-entry {
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1rem 0;
+}
+
+.diary-entry:last-child {
+    border-bottom: none;
+}
+
+.diary-entry-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.diary-entry-date {
+    font-weight: bold;
+    color: #4a5568;
+}
+
+.diary-entry-content {
+    color: #4a5568;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.diary-entry-actions {
+    margin-top: 0.5rem;
+    text-align: right;
+}
+
+.delete-diary {
+    background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    -webkit-tap-highlight-color: transparent; /* 移除iOS默认高亮 */
+}
+
+/* 触摸反馈样式 */
+button.touch-active {
+    opacity: 0.7;
+    transform: scale(0.98);
+}

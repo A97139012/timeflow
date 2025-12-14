@@ -1,0 +1,122 @@
+/* 日历样式 */
+
+.calendar-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.calendar-header h3 {
+    margin: 0;
+}
+
+.calendar-header button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    -webkit-tap-highlight-color: transparent; /* 移除iOS默认高亮 */
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    background-color: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.calendar-day-header {
+    background-color: #667eea;
+    color: white;
+    text-align: center;
+    padding: 0.5rem;
+    font-weight: bold;
+}
+
+.calendar-day {
+    background-color: white;
+    min-height: 80px;
+    padding: 0.5rem;
+    position: relative;
+    cursor: pointer;
+}
+
+.calendar-day.other-month {
+    background-color: #f7fafc;
+    color: #a0aec0;
+    cursor: default;
+}
+
+.calendar-day.today {
+    background-color: #ebf8ff;
+    border: 1px solid #667eea;
+}
+
+.calendar-day.selected {
+    background-color: #e6fffa;
+    border: 2px solid #4fd1c5;
+}
+
+.calendar-day-number {
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    font-size: 0.8rem;
+}
+
+.calendar-day-events {
+    margin-top: 1rem;
+    font-size: 0.7rem;
+}
+
+.event-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 2px;
+    background-color: #667eea;
+}
+
+.event-item {
+    background-color: #667eea;
+    color: white;
+    padding: 2px 4px;
+    border-radius: 2px;
+    margin-bottom: 2px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.event-form-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+}
+
+.event-form-container form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* 触摸反馈样式 */
+button.touch-active {
+    opacity: 0.7;
+    transform: scale(0.98);
+}
