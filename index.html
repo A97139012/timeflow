@@ -55,6 +55,17 @@
 
         <section id="calendar" class="tab-content">
             <h2>计划日历</h2>
+            <p>点击日历中的日期可以查看详情和添加事件。已完成的工作会以灰色显示并带有删除线。</p>
+            
+            <div class="completed-work-section">
+                <h3>今日完成工作</h3>
+                <form id="completed-work-form">
+                    <textarea id="completed-work-text" placeholder="请输入今天完成的工作内容..." rows="3" style="width: 100%; padding: 10px; margin-bottom: 10px;"></textarea>
+                    <input type="date" id="completed-work-date" style="margin-bottom: 10px;" />
+                    <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer;">添加完成工作</button>
+                </form>
+            </div>
+            
             <div class="calendar-container">
                 <div class="calendar-header">
                     <button id="prev-month">&lt;</button>

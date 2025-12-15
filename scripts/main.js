@@ -223,7 +223,14 @@ class TimeFlowApp {
 
     exportCalendar() {
         if (window.calendarApp) {
-            const calendarData = JSON.stringify(window.calendarApp.getAllEvents(), null, 2);
+            // 创建包含事件和已完成工作的导出数据
+            const exportData = {
+                events: window.calendarApp.getAllEvents(),
+                completedWorks: window.calendarApp.getAllCompletedWorks(),
+                exportDate: new Date().toISOString()
+            };
+            
+            const calendarData = JSON.stringify(exportData, null, 2);
             this.downloadFile('calendar.json', calendarData, 'application/json');
         } else {
             alert('日历模块尚未初始化');
@@ -243,6 +250,7 @@ class TimeFlowApp {
                 const choice = confirm('是否要合并导入的日程与当前日程？\n点击"确定"合并日程，点击"取消"替换当前日程。');
                 
                 if (window.calendarApp) {
+                    // 使用统一的导入方法处理事件和已完成工作
                     window.calendarApp.importEvents(calendarData, choice);
                     alert('日程' + (choice ? '合并' : '替换') + '成功！');
                 } else {

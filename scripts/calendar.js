@@ -3,6 +3,7 @@ class CalendarApp {
     constructor() {
         this.currentDate = new Date();
         this.events = this.loadEvents();
+        this.completedWorks = this.loadCompletedWorks(); // 加载已完成工作
         this.selectedDate = null; // 当前选中的日期
         this.init();
     }
@@ -11,6 +12,25 @@ class CalendarApp {
         this.bindEvents();
         this.populatePlanSelect();
         this.renderCalendar();
+        this.setDefaultDate(); // 设置默认日期为今天
+    }
+
+    // 设置默认日期为今天
+    setDefaultDate() {
+        const today = new Date();
+        const dateString = this.formatDate(today);
+        const dateInput = document.getElementById('completed-work-date');
+        if (dateInput) {
+            dateInput.value = dateString;
+        }
+    }
+
+    // 格式化日期为 YYYY-MM-DD 格式
+    formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
     bindEvents() {
@@ -35,6 +55,13 @@ class CalendarApp {
                 this.deleteEvent(eventId);
             }
             
+            // 处理标记完成事件按钮点击
+            if (e.target.classList.contains('complete-event')) {
+                e.preventDefault();
+                const eventId = e.target.getAttribute('data-event-id');
+                this.toggleEventComplete(eventId);
+            }
+            
             // 处理日期点击
             if (e.target.classList.contains('calendar-day') && !e.target.classList.contains('other-month')) {
                 e.preventDefault();
@@ -56,6 +83,15 @@ class CalendarApp {
                 this.addEvent();
             });
         }
+
+        // 今日完成工作表单提交
+        const completedWorkForm = document.getElementById('completed-work-form');
+        if (completedWorkForm) {
+            completedWorkForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.addCompletedWork();
+            });
+        }
     }
 
     loadEvents() {
@@ -63,8 +99,19 @@ class CalendarApp {
         return events ? JSON.parse(events) : [];
     }
 
+    // 加载已完成工作
+    loadCompletedWorks() {
+        const works = localStorage.getItem('completedWorks');
+        return works ? JSON.parse(works) : [];
+    }
+
     saveEvents() {
         localStorage.setItem('calendarEvents', JSON.stringify(this.events));
+    }
+
+    // 保存已完成工作
+    saveCompletedWorks() {
+        localStorage.setItem('completedWorks', JSON.stringify(this.completedWorks));
     }
 
     populatePlanSelect() {
@@ -120,6 +167,7 @@ class CalendarApp {
             title: eventTitle.value,
             description: eventDescription ? eventDescription.value : '',
             planId: eventPlan ? eventPlan.value : '',
+            completed: false, // 添加完成状态，默认为false
             createdAt: new Date().toISOString()
         };
 
@@ -136,6 +184,33 @@ class CalendarApp {
         alert('日程添加成功！');
     }
 
+    // 添加今日完成工作
+    addCompletedWork() {
+        const workText = document.getElementById('completed-work-text');
+        const workDate = document.getElementById('completed-work-date');
+        
+        if (!workText || !workDate || !workText.value.trim()) {
+            alert('请输入完成的工作内容');
+            return;
+        }
+        
+        const work = {
+            id: Date.now().toString(),
+            date: workDate.value,
+            content: workText.value,
+            createdAt: new Date().toISOString()
+        };
+
+        this.completedWorks.push(work);
+        this.saveCompletedWorks();
+        this.renderCalendar();
+        
+        // 重置表单
+        workText.value = '';
+        
+        alert('今日完成工作添加成功！');
+    }
+
     deleteEvent(eventId) {
         if (confirm('确定要删除这个日程吗？')) {
             this.events = this.events.filter(event => event.id !== eventId);
@@ -149,6 +224,27 @@ class CalendarApp {
                     this.closeDateDetail();
                 }
             }
+        }
+    }
+
+    // 删除已完成工作
+    deleteCompletedWork(workId) {
+        if (confirm('确定要删除这条完成的工作记录吗？')) {
+            this.completedWorks = this.completedWorks.filter(work => work.id !== workId);
+            this.saveCompletedWorks();
+            this.renderCalendar();
+            this.showDateDetail(this.selectedDate);
+        }
+    }
+
+    // 切换事件完成状态
+    toggleEventComplete(eventId) {
+        const event = this.events.find(e => e.id === eventId);
+        if (event) {
+            event.completed = !event.completed;
+            this.saveEvents();
+            this.renderCalendar();
+            this.showDateDetail(this.selectedDate);
         }
     }
 
@@ -179,6 +275,9 @@ class CalendarApp {
         
         // 获取该日期的所有事件
         const dateEvents = this.events.filter(event => event.date === dateStr);
+        
+        // 获取该日期的所有完成工作
+        const dateCompletedWorks = this.completedWorks.filter(work => work.date === dateStr);
         
         // 获取关联的计划
         let plansInfo = '';
@@ -225,10 +324,15 @@ class CalendarApp {
                     });
                 }
                 
+                // 根据完成状态设置样式和按钮文本
+                const completedClass = event.completed ? 'completed-event' : '';
+                const completeButtonText = event.completed ? '标记未完成' : '标记完成';
+                
                 eventsHtml += `
-                    <li>
+                    <li class="${completedClass}">
                         <strong>${event.title}</strong>${planInfo}
                         ${event.description ? `<p>${event.description}</p>` : ''}
+                        <button class="complete-event" data-event-id="${event.id}" style="background:#4caf50;color:white;border:none;padding:2px 5px;font-size:12px;border-radius:2px;cursor:pointer;margin-right:5px;">${completeButtonText}</button>
                         <button class="delete-event" data-event-id="${event.id}" style="background:#ff4444;color:white;border:none;padding:2px 5px;font-size:12px;border-radius:2px;cursor:pointer;">删除</button>
                     </li>
                 `;
@@ -236,6 +340,21 @@ class CalendarApp {
             eventsHtml += '</ul>';
         } else {
             eventsHtml = '<p>当天暂无日程安排。</p>';
+        }
+        
+        // 构建完成工作列表
+        let completedWorksHtml = '';
+        if (dateCompletedWorks.length > 0) {
+            completedWorksHtml = '<h4>当日完成工作:</h4><ul>';
+            dateCompletedWorks.forEach(work => {
+                completedWorksHtml += `
+                    <li style="margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px dashed #eee;">
+                        <p>${work.content}</p>
+                        <button class="delete-completed-work" data-work-id="${work.id}" style="background:#ff4444;color:white;border:none;padding:2px 5px;font-size:12px;border-radius:2px;cursor:pointer;">删除</button>
+                    </li>
+                `;
+            });
+            completedWorksHtml += '</ul>';
         }
         
         // 创建详情面板
@@ -249,8 +368,18 @@ class CalendarApp {
                 </div>
                 ${plansInfo}
                 ${eventsHtml}
+                ${completedWorksHtml}
             </div>
         `;
+        
+        // 绑定删除已完成工作的事件
+        detailPanel.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-completed-work')) {
+                e.preventDefault();
+                const workId = e.target.getAttribute('data-work-id');
+                this.deleteCompletedWork(workId);
+            }
+        });
         
         // 移除现有的详情面板
         const existingPanel = document.getElementById('date-detail-panel');
@@ -340,23 +469,36 @@ class CalendarApp {
             // 添加当天事件
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
             const dayEvents = this.events.filter(event => event.date === dateStr);
+            const dayCompletedWorks = this.completedWorks.filter(work => work.date === dateStr);
             
-            if (dayEvents.length > 0) {
+            if (dayEvents.length > 0 || dayCompletedWorks.length > 0) {
                 const eventsContainer = document.createElement('div');
                 eventsContainer.className = 'calendar-day-events';
                 
-                dayEvents.slice(0, 3).forEach(event => { // 只显示前3个事件
+                // 显示事件
+                dayEvents.slice(0, 2).forEach(event => { // 只显示前2个事件
                     const eventElement = document.createElement('div');
-                    eventElement.className = 'event-item';
+                    eventElement.className = `event-item ${event.completed ? 'completed-event' : ''}`;
                     eventElement.textContent = event.title;
                     eventElement.title = event.title;
                     eventsContainer.appendChild(eventElement);
                 });
                 
-                if (dayEvents.length > 3) {
+                // 显示完成工作标记
+                if (dayCompletedWorks.length > 0) {
+                    const workElement = document.createElement('div');
+                    workElement.className = 'event-item completed-work-indicator';
+                    workElement.textContent = `已完成(${dayCompletedWorks.length})`;
+                    workElement.title = `今日完成了${dayCompletedWorks.length}项工作`;
+                    eventsContainer.appendChild(workElement);
+                }
+                
+                // 显示更多标记
+                const totalItems = dayEvents.length + dayCompletedWorks.length;
+                if (totalItems > 2) {
                     const moreElement = document.createElement('div');
                     moreElement.className = 'event-item';
-                    moreElement.textContent = `还有${dayEvents.length - 3}项`;
+                    moreElement.textContent = `还有${totalItems - 2}项`;
                     eventsContainer.appendChild(moreElement);
                 }
                 
@@ -390,35 +532,71 @@ class CalendarApp {
         return this.events;
     }
 
-    importEvents(eventsData, merge = false) {
-        // 验证导入的数据格式
-        if (!Array.isArray(eventsData)) {
+    // 获取所有已完成工作
+    getAllCompletedWorks() {
+        return this.completedWorks;
+    }
+
+    importEvents(importData, merge = false) {
+        // 检查传入的数据类型
+        let eventsData, worksData;
+        
+        if (Array.isArray(importData)) {
+            // 旧版数据格式（只有事件）
+            eventsData = importData;
+            worksData = [];
+        } else if (importData && typeof importData === 'object') {
+            // 新版数据格式（包含事件和已完成工作）
+            eventsData = importData.events || [];
+            worksData = importData.completedWorks || [];
+        } else {
             throw new Error('无效的日程数据格式');
+        }
+
+        if (!Array.isArray(eventsData)) {
+            throw new Error('无效的日程事件数据格式');
         }
 
         if (merge) {
             // 合并模式：将导入的日程添加到现有日程中
-            // 合并两个数组，去重（基于ID）
+            // 合并两个数组，去重（基于ID），优先保留浏览器中已有的完成状态
+            
+            // 处理事件数据
             const mergedEvents = [...this.events];
             eventsData.forEach(importedEvent => {
                 // 检查是否已存在相同ID的日程
                 const existingIndex = mergedEvents.findIndex(event => event.id === importedEvent.id);
                 if (existingIndex >= 0) {
-                    // 如果存在，替换它
-                    mergedEvents[existingIndex] = importedEvent;
+                    // 如果存在，保留浏览器中的完成状态，其他用导入数据替换
+                    const wasCompleted = mergedEvents[existingIndex].completed;
+                    mergedEvents[existingIndex] = {...importedEvent, completed: wasCompleted};
                 } else {
                     // 如果不存在，添加它
                     mergedEvents.push(importedEvent);
                 }
             });
             this.events = mergedEvents;
+            
+            // 处理已完成工作数据
+            const mergedWorks = [...this.completedWorks];
+            worksData.forEach(importedWork => {
+                // 检查是否已存在相同ID的工作
+                const existingIndex = mergedWorks.findIndex(work => work.id === importedWork.id);
+                if (existingIndex < 0) {
+                    // 如果不存在，才添加（避免重复）
+                    mergedWorks.push(importedWork);
+                }
+            });
+            this.completedWorks = mergedWorks;
         } else {
             // 替换模式：直接使用导入的日程数据
             this.events = eventsData;
+            this.completedWorks = worksData;
         }
         
         // 保存并重新渲染日历
         this.saveEvents();
+        this.saveCompletedWorks();
         this.renderCalendar();
     }
 }
