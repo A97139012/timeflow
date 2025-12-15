@@ -175,6 +175,11 @@ class CalendarApp {
         this.saveEvents();
         this.renderCalendar();
         
+        // 如果添加的事件日期是当前选中的日期，则更新详细信息面板
+        if (this.selectedDate && this.selectedDate === eventDate.value) {
+            this.showDateDetail(this.selectedDate);
+        }
+        
         // 重置表单
         eventDate.value = '';
         eventTitle.value = '';
